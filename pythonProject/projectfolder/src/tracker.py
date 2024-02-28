@@ -1,51 +1,81 @@
 """отслеживает поступление новых файлов и открывает их"""
-import time
 
 from pickers import *
 import os
 import psutil
 import getpass
+
+
 class Tracker:
+    """Класс для отслеживания и выдачи файлов"""
+    @staticmethod
+    def check_list():
+        """
+         Функия проверяет наличие  файлов в дериктории
+
+         Параметры:
+
+         Возвращает:
+            True: если  есть
+            False: если нет
+         """
+        list_of_files = os.listdir(path=os.getenv('PATH_1'))
+        if len(list_of_files) != 0:
+            return True
+        else:
+            return False
 
     @staticmethod
-    def check_list(path_media):
-        list_of_files = (os.listdir(path=path_media))
-        if len(list_of_files)!=0:
-            return True
-        else: return False
-    @staticmethod
-    def ckeck_closed ():
+    def ckeck_opened():
+        """
+        Функия проверяет закрыт ли  фото/текстовый файл в системе
+
+        Параметры:
+
+        Возвращает:
+            True: если   открыт
+            False: если  закрыт
+        """
         list_1 = []
         for proc in psutil.process_iter(['pid', 'name', 'username']):
-            if proc.info['username'] == getpass.getuser() and proc.info['name']=='eog' :
+            if proc.info['username'] == getpass.getuser() and (
+                    proc.info['name'] == 'eog' or proc.info['name'] == 'gedit'):
                 list_1.append((proc.pid, proc.info['name']))
 
         if len(list_1) == 0:
-            list=[]
             return False
-        else: return True
+        else:
+            return True
+
     @staticmethod
-    def path_to_file(path_media):
-        list_of_files=os.listdir(path=os.environ['PATH_1'])
-        return path_media+str(list_of_files[0])
+    def get_file():
+        """
+        Функция выдает очередной файл
 
-class Reader():
-    def open_file(self):
-        command="xdg-open "+str(Tracker.path_to_file(os.environ['PATH_1']))
+        Параметры:
+
+        Возвращает:
+            str:  имя файла
+        """
+        file = os.listdir(path=os.getenv('PATH_1'))[0]
+        return file
+
+
+class Reader:
+    """Класс для чтения файлов"""
+    @staticmethod
+    def open_file(file):
+        command = "xdg-open " + os.getenv('PATH_1') + file
         os.system(command)
-A=Reader()
-B=Pickers()
+
+
+B = Pickers()
 while True:
-    print(Tracker.check_list(os.environ['PATH_1']))
-    if Tracker.check_list(os.environ['PATH_1']):
-        A.open_file()
-        while Tracker.ckeck_closed():
+    if Tracker.check_list():
+        file = Tracker.get_file()
+        Reader.open_file(file)
+        while Tracker.ckeck_opened():
             continue
-        list_of_files = os.listdir(path=os.environ['PATH_1'])
-        B.move_to_dump(list_of_files[0])
-    else: time.sleep(1)
-
-
-
-
-
+        B.move_to_dump(file)
+    else:
+        continue
