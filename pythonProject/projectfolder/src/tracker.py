@@ -19,14 +19,14 @@ class Tracker:
             True: если  есть
             False: если нет
          """
-        list_of_files = os.listdir(path=os.getenv('PATH_1'))
+        list_of_files = os.listdir(path=os.getenv('PATH_MEDIA'))
         if len(list_of_files) != 0:
             return True
         else:
             return False
 
     @staticmethod
-    def ckeck_opened():
+    def check_opened():
         """
         Функия проверяет закрыт ли  фото/текстовый файл в системе
 
@@ -41,7 +41,7 @@ class Tracker:
             if proc.info['username'] == getpass.getuser() and (
                     proc.info['name'] == 'eog' or proc.info['name'] == 'gedit'):
                 list_1.append((proc.pid, proc.info['name']))
-
+        print(list_1)
         if len(list_1) == 0:
             return False
         else:
@@ -57,7 +57,7 @@ class Tracker:
         Возвращает:
             str:  имя файла
         """
-        file = os.listdir(path=os.getenv('PATH_1'))[0]
+        file = os.listdir(path=os.getenv('PATH_MEDIA'))[0]
         return file
 
 
@@ -65,7 +65,7 @@ class Reader:
     """Класс для чтения файлов"""
     @staticmethod
     def open_file(file):
-        command = "xdg-open " + os.getenv('PATH_1') + file
+        command = "xdg-open " + os.getenv('PATH_MEDIA') + file
         os.system(command)
 
 
@@ -74,7 +74,7 @@ while True:
     if Tracker.check_list():
         file = Tracker.get_file()
         Reader.open_file(file)
-        while Tracker.ckeck_opened():
+        while Tracker.check_opened():
             continue
         B.move_to_dump(file)
     else:

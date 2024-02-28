@@ -3,8 +3,8 @@
 import os
 import time
 class Pickers:
-    path_media = os.getenv('PATH_1')
-    path_dump= os.getenv('PATH_2')
+    path_media = os.getenv('PATH_MEDIA')
+    path_dump= os.getenv('PATH_DUMP')
     def _get_names_or_extension(self, file):
         pos=file.rfind('.')
         name=file[:pos]
@@ -18,5 +18,5 @@ class Pickers:
         return  name_new
     def move_to_dump(self, file):
         new_path= self.path_dump+ self._change_name(file)
-        old_path= self.path_media+os.listdir(path=os.environ['PATH_1'])[0]
+        old_path= self.path_media+os.listdir(path=os.environ['PATH_MEDIA'])[0]
         os.replace(old_path, new_path)
