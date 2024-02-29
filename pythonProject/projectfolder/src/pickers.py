@@ -5,7 +5,8 @@ import time
 class Pickers:
     path_media = os.getenv('PATH_MEDIA')
     path_dump= os.getenv('PATH_DUMP')
-    def _get_names_or_extension(self, file):
+    @staticmethod
+    def _get_names_or_extension(file):
         pos=file.rfind('.')
         name=file[:pos]
         extension=file[pos:]

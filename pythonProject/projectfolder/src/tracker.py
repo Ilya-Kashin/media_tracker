@@ -1,13 +1,36 @@
 """отслеживает поступление новых файлов и открывает их"""
+import time
 
 from pickers import *
 import os
-import psutil
-import getpass
+import subprocess
+
+
+class Reader:
+    """Класс для чтения файлов"""
+    proc_poll= None
+    def open_file(self, file):
+        """Проверяет формат файла. Если формат допустимый, октрывает документ"""
+
+        extension=Pickers()._get_names_or_extension(file)[1]
+        if extension in ['.jpg', '.jpeg', '.png']:
+            command = os.getenv('PATH_MEDIA') + file
+            proc_open=subprocess.Popen(['eog', command])
+            proc_open.wait()
+            self.proc_poll=proc_open.poll()
+        elif Pickers()._get_names_or_extension(file)[1] in ['.txt']:
+            command = os.getenv('PATH_MEDIA') + file
+            proc_open = subprocess.Popen(['eog', command])
+            self.proc_pid = proc_open.pid
+            self.proc_poll=proc_open.poll()
+        else:
+            self.proc_pid = None
+            print('НЕдопустимый формат файла')
 
 
 class Tracker:
     """Класс для отслеживания и выдачи файлов"""
+
     @staticmethod
     def check_list():
         """
@@ -26,7 +49,7 @@ class Tracker:
             return False
 
     @staticmethod
-    def check_opened():
+    def check_opened(poll=Reader.proc_poll):
         """
         Функия проверяет закрыт ли  фото/текстовый файл в системе
 
@@ -36,17 +59,10 @@ class Tracker:
             True: если   открыт
             False: если  закрыт
         """
-        list_1 = []
-        for proc in psutil.process_iter(['pid', 'name', 'username']):
-            if proc.info['username'] == getpass.getuser() and (
-                    proc.info['name'] == 'eog' or proc.info['name'] == 'gedit'):
-                list_1.append((proc.pid, proc.info['name']))
-        print(list_1)
-        if len(list_1) == 0:
+        if poll==None:
             return False
         else:
             return True
-
     @staticmethod
     def get_file():
         """
@@ -61,19 +77,16 @@ class Tracker:
         return file
 
 
-class Reader:
-    """Класс для чтения файлов"""
-    @staticmethod
-    def open_file(file):
-        command = "xdg-open " + os.getenv('PATH_MEDIA') + file
-        os.system(command)
+
+
 
 
 B = Pickers()
+reader=Reader()
 while True:
     if Tracker.check_list():
         file = Tracker.get_file()
-        Reader.open_file(file)
+        reader.open_file(file)
         while Tracker.check_opened():
             continue
         B.move_to_dump(file)

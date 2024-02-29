@@ -1,7 +1,8 @@
 #!/bin/bash
 #вставьте путь в формате как в примере 
-
-export PATH_MEDIA=/home/ilya/work_dir/media/
-export PATH_DUMP=/home/ilya/work_dir/dump/
+read -p "Введите путь до папки с медиа файлами:" PATH_MEDIA
+export PATH_MEDIA
+read  -p "Введите путь до папки-мусорки:" PATH_DUMP
+export PATH_DUMP
 pip install -r requirements.txt
-python3 /pythonProject/projectfolder/src/tracker.py
+python3 $PWD/src/tracker.py
