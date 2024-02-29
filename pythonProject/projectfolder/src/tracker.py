@@ -1,5 +1,4 @@
 """отслеживает поступление новых файлов и открывает их"""
-import time
 
 from pickers import *
 import os
@@ -79,16 +78,22 @@ class Tracker:
 
 
 
+def run ():
+  pickers = Pickers()
+  reader = Reader()
+  while True:
+      if Tracker.check_list():
+          file = Tracker.get_file()
+          reader.open_file(file)
+          while Tracker.check_opened():
+              continue
+          pickers.move_to_dump(file)
+      else:
+          continue
 
 
-B = Pickers()
-reader=Reader()
-while True:
-    if Tracker.check_list():
-        file = Tracker.get_file()
-        reader.open_file(file)
-        while Tracker.check_opened():
-            continue
-        B.move_to_dump(file)
-    else:
-        continue
+if __name__=="__main__":
+    run()
+
+
+
