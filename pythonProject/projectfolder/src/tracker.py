@@ -20,7 +20,7 @@ class Reader:
             self.proc_poll=proc_open.poll()
         elif Pickers()._get_names_or_extension(file)[1] in ['.txt']:
             command = os.getenv('PATH_MEDIA') + file
-            proc_open = subprocess.Popen(['eog', command])
+            proc_open = subprocess.Popen(['gedit', command])
             self.proc_pid = proc_open.pid
             self.proc_poll=proc_open.poll()
         else:
